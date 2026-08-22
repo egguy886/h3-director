@@ -1,0 +1,5 @@
+interface:
+  display_name: "H3 Director"
+  short_description: "Direct short-form scenes and compile MiniMax H3 prompts"
+  default_prompt: "Use $h3-director to direct this short scene and compile a production-ready MiniMax H3 prompt."
+
