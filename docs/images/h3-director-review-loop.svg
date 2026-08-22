@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="460" viewBox="0 0 1200 460" role="img" aria-labelledby="title desc">
+  <title id="title">H3 Director review loop</title>
+  <desc id="desc">A review loop showing generate, inspect, diagnose, and one-variable repair.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#130d1e"/><stop offset="1" stop-color="#30223f"/></linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#ffcc88"/></marker>
+    <style>.h{font:700 28px Inter,Segoe UI,sans-serif;fill:#fff9ef}.b{font:700 19px Inter,Segoe UI,sans-serif;fill:#fff9ef}.s{font:15px Inter,Segoe UI,sans-serif;fill:#e7d9ef}.line{stroke:#ffcc88;stroke-width:4;fill:none;marker-end:url(#arrow)}.small{font:700 16px Inter,Segoe UI,sans-serif;fill:#201528}</style>
+  </defs>
+  <rect width="1200" height="460" rx="24" fill="url(#bg)"/>
+  <text x="55" y="62" class="h">Take review is a controlled loop</text>
+  <text x="55" y="92" class="s">不要用整段重写掩盖一个局部故障；先找主变量，再决定下一次动作。</text>
+  <g transform="translate(90,175)"><circle cx="100" cy="75" r="72" fill="#50395f" stroke="#caa1e4" stroke-width="3"/><text x="47" y="70" class="b">GENERATE</text><text x="45" y="98" class="s">H3 take</text></g>
+  <g transform="translate(355,175)"><circle cx="100" cy="75" r="72" fill="#334d67" stroke="#8ac8ed" stroke-width="3"/><text x="52" y="70" class="b">INSPECT</text><text x="39" y="98" class="s">visual + sound</text></g>
+  <g transform="translate(620,175)"><circle cx="100" cy="75" r="72" fill="#5b4b31" stroke="#f2d58b" stroke-width="3"/><text x="49" y="70" class="b">DIAGNOSE</text><text x="44" y="98" class="s">one cause</text></g>
+  <g transform="translate(885,175)"><circle cx="100" cy="75" r="72" fill="#57353d" stroke="#f0a7ae" stroke-width="3"/><text x="51" y="70" class="b">REPAIR</text><text x="28" y="98" class="s">one variable</text></g>
+  <path d="M265 250 H345" class="line"/><path d="M530 250 H610" class="line"/><path d="M795 250 H875" class="line"/>
+  <path d="M985 150 C1090 70,1145 115,1145 220 C1145 335,1050 390,930 350" class="line"/>
+  <rect x="420" y="360" width="360" height="46" rx="23" fill="#ffcc88"/><text x="476" y="390" class="small">KEEP · POST-FIX · REROLL · REWRITE</text>
+</svg>
+
+
