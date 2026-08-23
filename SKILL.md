@@ -1,6 +1,6 @@
 ---
 name: h3-director
-description: Direct and compile production-ready MiniMax H3 audiovisual prompts for short films, vertical dramas, commercials, and connected 4–15 second clips. Use when a user wants professional director reasoning, camera/blocking/action/lighting/performance/sound design, H3 T2VA/I2VA/FL2VA/L2VA/Ref2VA prompts, ComfyUI reference-image upload maps, multi-clip continuity, generated-take review, or one-variable H3 prompt repair.
+description: Direct and compile production-ready MiniMax H3 audiovisual prompts and durable episode packages for short films, vertical dramas, commercials, and connected 4–15 second clips. Use when a user wants professional director reasoning, camera/blocking/action/lighting/performance/sound design, H3 T2VA/I2VA/FL2VA/L2VA/Ref2VA prompts, ComfyUI reference-image upload maps, grouped prompts and visual assets, browser-openable novel-art-style reports, multi-clip continuity, generated-take review, or one-variable H3 prompt repair.
 ---
 
 # H3 Director
@@ -110,6 +110,20 @@ Unless the user requests prompt-only output, return four clearly separated objec
 4. **Continuity handoff** with planned endpoint and, after review, observed endpoint.
 
 When saving files, keep the prompt and asset map beside the clip's assets. Do not overwrite an accepted version; create a new version.
+
+## Build an episode package
+
+When the user asks for a season/episode deliverable, or asks to keep prompts and assets together, follow `references/episode-package.md`. Use one folder per episode with `prompts/`, categorized `assets/`, `upload-map/`, `continuity/`, and `report/`.
+
+After prompt and asset decisions are accepted:
+
+1. Run `scripts/validate_h3_prompt.py` for every prompt.
+2. If the `novel-art` skill is available, render its `art.json` to Markdown and HTML before packaging. Preserve its `art-report.html` and `images/` directory under the episode's `report/` folder.
+3. Run `scripts/build_episode_package.py` with the prompt directory, categorized asset roots, upload map, continuity file, and optional novel-art outputs.
+4. Open `report/episode-report.html` locally and verify prompt counts, image previews, validator badges, download/copy buttons, and report links.
+5. Return the episode folder path and the report path. The report is a navigation/QA surface; the clean prompt files remain the source of truth for H3.
+
+The builder is deterministic and does not call a remote API. It copies local files, validates prompts with the bundled validator, and creates a self-contained HTML index. See `references/episode-package.md` for the contract and command.
 
 ## Continue from accepted footage
 

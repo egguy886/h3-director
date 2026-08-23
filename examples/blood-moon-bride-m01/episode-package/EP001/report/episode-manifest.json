@@ -1,0 +1,83 @@
+{
+  "episodeId": "EP001",
+  "title": "M01 · Burning Yacht",
+  "source": "D:\\剧本项目\\h3-director-work\\examples\\blood-moon-bride-m01\\director-brief.md",
+  "generatedAtUtc": "2026-08-23T05:53:41+00:00",
+  "prompts": [
+    {
+      "file": "../prompts/prompt-ref2va.txt",
+      "validation": {
+        "ok": true,
+        "errors": [],
+        "warnings": [],
+        "stats": {
+          "mode": "ref2va",
+          "duration_seconds": 15.0,
+          "fields": [
+            "subject_definitions",
+            "summary",
+            "retention_analysis",
+            "detailed_description",
+            "overall_soundscape",
+            "non_diegetic_music"
+          ],
+          "shots": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "cut_times_seconds": [
+            3.0,
+            7.0,
+            11.0
+          ],
+          "reference_labels": [
+            "<Picture 1>",
+            "<Picture 2>",
+            "<Picture 3>",
+            "<Picture 4>",
+            "<Picture 5>",
+            "<Picture 6>",
+            "<Subject 1>",
+            "<Subject 2>",
+            "<Subject 3>"
+          ],
+          "speakers": [
+            "S1"
+          ],
+          "dialogue_blocks": 1,
+          "main_description_word_count": 493
+        }
+      }
+    }
+  ],
+  "assets": [
+    {
+      "file": "../assets/documentation/h3-director-pipeline.svg",
+      "category": "documentation",
+      "kind": "file",
+      "bytes": 3534
+    },
+    {
+      "file": "../assets/documentation/h3-director-review-loop.svg",
+      "category": "documentation",
+      "kind": "file",
+      "bytes": 2403
+    },
+    {
+      "file": "../assets/documentation/h3-episode-package.svg",
+      "category": "documentation",
+      "kind": "file",
+      "bytes": 4927
+    }
+  ],
+  "packageLinks": {
+    "upload-map": "../upload-map/asset-map.md",
+    "continuity": "../continuity/continuity.md"
+  },
+  "reports": {
+    "novelArtJson": null,
+    "novelArtReport": null
+  }
+}

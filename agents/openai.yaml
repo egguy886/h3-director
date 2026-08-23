@@ -1,5 +1,5 @@
 interface:
   display_name: "H3 Director"
-  short_description: "Direct short-form scenes and compile MiniMax H3 prompts"
-  default_prompt: "Use $h3-director to direct this short scene and compile a production-ready MiniMax H3 prompt."
+  short_description: "Direct scenes, compile H3 prompts, and package episode assets"
+  default_prompt: "Use $h3-director to direct this scene, compile a production-ready MiniMax H3 prompt, and package the episode assets and report."
 
