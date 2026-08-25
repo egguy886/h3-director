@@ -1,6 +1,6 @@
 ---
 name: h3-director
-description: Direct and compile production-ready MiniMax H3 audiovisual prompts for short films, vertical dramas, commercials, and connected 4–15 second clips. Use when a user wants professional director reasoning, camera/blocking/action/lighting/performance/sound design, H3 T2VA/I2VA/FL2VA/L2VA/Ref2VA prompts, ComfyUI reference-image upload maps, multi-clip continuity, generated-take review, or one-variable H3 prompt repair.
+description: Direct and compile production-ready MiniMax H3 audiovisual prompts for short films, vertical dramas, commercials, and connected 4–15 second clips. Use when a user wants professional director reasoning, camera/blocking/action/lighting/performance/sound design, Chinese H3 prompt prose with original-language overseas dialogue, H3 T2VA/I2VA/FL2VA/L2VA/Ref2VA prompts, ComfyUI reference-image upload maps, real-frame multi-clip continuity, generated-take review, or one-variable H3 prompt repair.
 ---
 
 # H3 Director
@@ -79,23 +79,31 @@ For ComfyUI, output an explicit upload map:
 
 Number H3 pictures from 1 while Comfy inputs begin at 0. Preserve that offset exactly.
 
+## Prompt language policy
+
+Default the compiled H3 prompt's narrative and directing prose to **Chinese** unless the user explicitly requests another prompt language. This is a language choice, not a schema change: keep the official H3 top-level field names, field order, reference labels, speaker IDs, timing syntax, and dialogue tags exactly as required by `h3-prompt-writing`.
+
+For an overseas production, keep every spoken line in the script's original **English** inside `<d>[English] ...</d>`. Preserve the approved wording and speaker; do not translate it into Chinese, paraphrase it, or invent a replacement merely to match the Chinese prompt prose. If the source script supplies only Chinese dialogue and the user has not approved an English adaptation, stop and flag the missing approved English line rather than silently rewriting it.
+
+Use Chinese for subject definitions, summary, retention instructions, shot direction, camera, lighting, and sound descriptions. Use the official H3 labels such as `<Subject 1>` and `<Picture 1>` unchanged. The prompt may therefore be bilingual by design: Chinese production instructions plus original-language dialogue.
+
 ## Compile the H3 prompt
 
 Use the official dependency format without adding custom top-level fields.
 
 - Base modes: emit the required alignment instruction, when applicable, followed by `integrated_multimodal_description`, `overall_soundscape`, and `non_diegetic_music`.
 - Ref2VA: emit exactly `subject_definitions`, `summary`, `retention_analysis`, `detailed_description`, `overall_soundscape`, and `non_diegetic_music` in that order.
-- Write rewrite prose in English. Preserve dialogue, lyrics, and visible scene text in their requested original language.
+- Write rewrite prose in Chinese by default. Preserve dialogue, lyrics, and visible scene text in their requested original language; for overseas drama, dialogue remains the approved original English.
 - Use stable `<Subject N>`, `<Picture N>`, `<Video N>`, `<Audio N>`, and `(Sx)` identities.
 - Put only the language tag and exact spoken words inside `<d>...</d>`.
 - Keep cut times strictly increasing and within the requested duration. Shot 1 has no cut timestamp.
 - Put dialogue in the shot body, physical/ambient audio in `overall_soundscape`, and audience-only score in `non_diegetic_music`.
 - Prefer concrete observable action to emotional adjectives and generic words such as “cinematic,” “epic,” or “dynamic.”
 
-Run the structural validator after writing a prompt:
+Run the structural validator after writing a prompt. Pass `--prompt-lang zh` for the default Chinese prompt prose; use `--prompt-lang en` for English prose:
 
 ```powershell
-python scripts/validate_h3_prompt.py <prompt.txt> --mode ref2va --duration 15
+python scripts/validate_h3_prompt.py <prompt.txt> --mode ref2va --duration 15 --prompt-lang zh
 ```
 
 Fix every error. Review warnings with judgment; warnings are not automatic failures.
@@ -114,6 +122,17 @@ When saving files, keep the prompt and asset map beside the clip's assets. Do no
 ## Continue from accepted footage
 
 For sequences, follow `references/h3-sequence-continuity.md`. Planned state is provisional. Accepted footage's observed final state is canon. Never write the next prompt from a rejected take or from an unverified planned ending.
+
+Apply the **real-frame handoff rule** to every connected module and episode boundary:
+
+1. After each generated take, inspect the actual MP4 and save its first valid frame and last valid decoded frame as versioned PNG assets.
+2. Promote frames only after the take is accepted. A rejected take's frames never enter the continuity chain.
+3. The accepted `Mxx_END_FRAME` becomes the next module's `M(next)_START_FRAME` and must be uploaded as `<Picture 1>` / `ref_image_0`.
+4. If `ref_video_0` is used, it must be the same accepted source video that produced that end frame. Do not mix a still from one take with a video from another.
+5. State the physical endpoint explicitly in the new prompt; labels such as “continuation” do not give H3 memory of a previous clip.
+6. Stage the final 0.3–0.5 seconds as a readable handoff: no unplanned cut, new character, prop teleport, or unresolved transformation in the final frame unless the next module is designed to consume it.
+
+Use stable names such as `EP001_M03_END_FRAME_v01.png` and `EP001_M04_START_FRAME_v01.png`. Record the accepted source, frame timestamps or decoder position, and a hash when the pipeline supports it. For an intentional editorial hard cut, mark the handoff as `editorial_cut` and provide a deliberate new opening frame instead of pretending it is physical continuity.
 
 ## Review and repair
 
@@ -134,6 +153,8 @@ Before delivery, verify:
 - dialogue fits the available time and the mouth is visible when lip sync is requested;
 - references do not conflict or leak unrelated wardrobe, faces, architecture, pose, or framing;
 - the ending creates a usable state or hook for the next module;
+- the accepted take has a saved real end frame, and that exact frame is assigned to the next module's `Picture 1` / `ref_image_0`;
+- the final 0.3–0.5 seconds are stable enough to extract a useful handoff frame;
 - the final prompt passes `validate_h3_prompt.py`.
 
 
