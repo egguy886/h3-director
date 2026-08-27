@@ -13,7 +13,7 @@ H3 Director turns a story beat into a compact, production-ready shot contract an
 - **Director reasoning** — dramatic turn, blocking, weight and support, eyelines, screen direction, motivated camera movement, lighting continuity, performance, and sound.
 - **H3 compliance** — official top-level field order, stable subject/picture labels, exact dialogue tags, strict shot timings, and mode-specific compilation for Ref2VA and base modes.
 - **Reference discipline** — every image, video, or audio reference receives one primary authority; the ComfyUI map preserves the H3 Picture 1 → `ref_image_0` offset.
-- **Continuity** — accepted footage is treated as canon. The next clip inherits the observed endpoint rather than an unverified plan.
+- **Continuity** — accepted footage is treated as canon. Each accepted take gets real start/end frame assets; the exact accepted end frame becomes the next clip's Picture 1 / `ref_image_0` rather than an unverified plan.
 - **Retake control** — every review returns one verdict: `KEEP`, `POST-FIX`, `REROLL`, or `REWRITE`, with one controlling repair variable for a reroll.
 
 ## The production loop
@@ -23,9 +23,9 @@ H3 Director turns a story beat into a compact, production-ready shot contract an
 1. Read the beat and recover known project decisions.
 2. Write the internal Director’s Read and a visible shot contract.
 3. Assign reference authority and produce a ComfyUI upload map.
-4. Compile the final English H3 prompt.
+4. Compile the final H3 prompt: Chinese directing prose by default, with approved overseas dialogue kept in the script's original English.
 5. Run the structural validator before generation.
-6. Review the generated take, record the observed endpoint, and repair only what failed.
+6. Review the generated take, extract and record its real end frame, promote it only if accepted, and repair only what failed.
 
 ## Install for Codex
 
@@ -49,6 +49,8 @@ Ask for the task in production language, for example:
 
 > Use H3 Director. Turn this 15-second vertical drama beat into a Ref2VA prompt, an exact ComfyUI asset map, and a continuity handoff. Keep the dialogue in natural American English and use scene sound only, with no non-diegetic score.
 
+Prompt-language rule: the H3 prompt's directing prose is Chinese by default. For an overseas drama, keep the script-approved dialogue in original English inside the official `<d>[English]...</d>` tag; do not translate or replace it.
+
 The skill returns four objects unless prompt-only output is requested:
 
 1. a director brief in the working language;
@@ -61,8 +63,10 @@ The skill returns four objects unless prompt-only output is requested:
 The bundled validator checks H3 field order, reference labels, shot timing, speaker IDs, and duration bounds:
 
 ```powershell
-python scripts/validate_h3_prompt.py examples/blood-moon-bride-m01/prompt-ref2va.txt --mode ref2va --duration 15
+python scripts/validate_h3_prompt.py examples/blood-moon-bride-m01/prompt-ref2va.txt --mode ref2va --duration 15 --prompt-lang en
 ```
+
+For Chinese directing prose with original English overseas dialogue, use `--prompt-lang zh`; the validator then does not mistake ordinary Chinese instructions for visible generated text or apply an English-only word-count warning.
 
 The included example is a Ref2VA module from *Blood Moon Bride*: it contains a director brief, asset map, continuity handoff, validation record, and a ready-to-paste prompt.
 

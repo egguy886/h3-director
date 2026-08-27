@@ -62,7 +62,7 @@ def parse_time(minutes: str, seconds: str, millis: str) -> float:
     return int(minutes) * 60 + int(seconds) + int(millis) / 1000
 
 
-def validate(text: str, mode: str, duration: float) -> Result:
+def validate(text: str, mode: str, duration: float, prompt_lang: str = "en") -> Result:
     errors: list[str] = []
     warnings: list[str] = []
     expected = REF_FIELDS if mode == "ref2va" else BASE_FIELDS
@@ -185,26 +185,34 @@ def validate(text: str, mode: str, duration: float) -> Result:
         if term.lower() in text.lower():
             errors.append(f"Internal Director's Read label leaked into the H3 prompt: {term}")
 
-    if CJK_RE.search(remove_dialogue(text)):
+    if prompt_lang != "zh" and CJK_RE.search(remove_dialogue(text)):
         warnings.append("CJK text exists outside <d> dialogue blocks; verify it is intentional visible scene text")
 
-    if mode == "ref2va" and body:
+    if mode == "ref2va" and body and prompt_lang != "zh":
         word_count = len(re.findall(r"\b[A-Za-z][A-Za-z'-]*\b", body))
         if word_count < 350 or word_count > 500:
             warnings.append(
                 f"Ref2VA detailed_description has about {word_count} English words; official guidance normally uses 350-500"
             )
+    elif mode == "ref2va" and body:
+        word_count = len(re.findall(r"\b[A-Za-z][A-Za-z'-]*\b", body))
     else:
         word_count = len(re.findall(r"\b[A-Za-z][A-Za-z'-]*\b", body)) if body else 0
 
     for field in ("overall_soundscape", "non_diegetic_music"):
         value = sections.get(field, "")
-        if value and value != "N/A" and len(value.split()) < 3:
-            warnings.append(f"{field} is unusually short")
+        if value and value != "N/A":
+            if prompt_lang == "zh":
+                too_short = len(CJK_RE.findall(value)) < 6
+            else:
+                too_short = len(value.split()) < 3
+            if too_short:
+                warnings.append(f"{field} is unusually short")
 
     stats = {
         "mode": mode,
         "duration_seconds": duration,
+        "prompt_lang": prompt_lang,
         "fields": recognized,
         "shots": unique_shots,
         "cut_times_seconds": cut_times,
@@ -225,6 +233,12 @@ def main() -> int:
         choices=["t2va", "i2va", "fl2va", "l2va", "ref2va"],
     )
     parser.add_argument("--duration", required=True, type=float)
+    parser.add_argument(
+        "--prompt-lang",
+        choices=["en", "zh"],
+        default="en",
+        help="Language of the non-dialogue prompt prose; zh disables English-only word/CJK warnings",
+    )
     parser.add_argument("--json", action="store_true", dest="as_json")
     args = parser.parse_args()
 
@@ -236,7 +250,7 @@ def main() -> int:
         print(f"ERROR: cannot read {args.prompt}: {exc}", file=sys.stderr)
         return 2
 
-    result = validate(text, args.mode, args.duration)
+    result = validate(text, args.mode, args.duration, args.prompt_lang)
     if args.as_json:
         print(json.dumps(asdict(result), ensure_ascii=False, indent=2))
     else:

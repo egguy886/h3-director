@@ -2,6 +2,11 @@
 
 - `project_id`: BLOOD_MOON_BRIDE
 - `episode_id`: EP001
+- `start_frame_asset`: `EP001_M01_START_FRAME_v01.png`（首段由已批准的冷开场关键帧提供）
+- `end_frame_asset`: 尚未生成；必须从通过的 MP4 最后一个有效解码帧提取
+- `next_clip_start_frame_asset`: 尚未生成；通过后复制/引用 M01 的真实尾帧
+- `handoff_type`: `physical_continuation`
+- `frame_source_integrity`: 通过后记录 MP4 路径、解码帧位置和哈希
 - `clip_id`: M01_00-15_H3D_V02
 - `verdict`: 尚未生成，本文件只记录计划状态
 - `accepted_source`: 无
