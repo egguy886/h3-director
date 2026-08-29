@@ -1,5 +1,5 @@
 interface:
   display_name: "H3 Director"
-  short_description: "Use an eight-step director workflow to compile MiniMax H3 prompts"
-  default_prompt: "Use $h3-director: complete the eight-step asset-first director contract, map the references, and compile a production-ready MiniMax H3 prompt."
+  short_description: "Use an eight-step director workflow to compile MiniMax H3 prompts and package episode assets"
+  default_prompt: "Use $h3-director: complete the eight-step asset-first director contract, map the references, compile a production-ready MiniMax H3 prompt, and package approved episode assets and reports."
 

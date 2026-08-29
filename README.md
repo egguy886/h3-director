@@ -75,6 +75,34 @@ For Chinese directing prose with original English overseas dialogue, use `--prom
 
 The included example is a Ref2VA module from *Blood Moon Bride*: it contains an eight-section director contract, asset map, continuity handoff, validation record, and a ready-to-paste prompt.
 
+## Package a complete episode
+
+When a sequence has approved prompts and visual assets, keep the production handoff in one episode folder instead of scattering files across a project drive. The package contract is documented in [`references/episode-package.md`](references/episode-package.md) and can be built with the bundled deterministic script:
+
+![H3 Director episode package](docs/images/h3-episode-package.svg)
+
+```powershell
+python scripts/build_episode_package.py `
+  --episode-id EP001 `
+  --title "Last Antidote" `
+  --source "D:\project\episodes\ep001.md" `
+  --prompts-dir "D:\project\prompts" `
+  --assets-root characters="D:\project\assets\characters" `
+  --assets-root scenes="D:\project\assets\scenes" `
+  --assets-root keyframes="D:\project\assets\keyframes" `
+  --assets-root props="D:\project\assets\props" `
+  --upload-map "D:\project\upload-map\EP001_UPLOAD_MAP.md" `
+  --continuity "D:\project\continuity\EP001_CONTINUITY.md" `
+  --art-json "D:\project\novel-art\EP001-art.json" `
+  --novel-art-report "D:\project\novel-art\art-report.html" `
+  --novel-art-images "D:\project\novel-art\images" `
+  --out "D:\project\episodes\EP001"
+```
+
+The result contains `prompts/`, categorized `assets/`, `upload-map/`, `continuity/`, and `report/episode-report.html`. The merged report previews local images, exposes prompt copy/download actions, shows validator status, links to the optional full `novel-art` report, and exports an `episode-manifest.json`. The clean `.txt` prompts remain the H3 source of truth.
+
+The inspectable example at [`examples/blood-moon-bride-m01/episode-package/EP001/`](examples/blood-moon-bride-m01/episode-package/EP001/) is built with the same contract; open its `report/episode-report.html` to see the navigation surface.
+
 ## Repository map
 
 ```text
@@ -86,6 +114,8 @@ scripts/validate_director_contract.py
                                  Eight-step director contract validator
 examples/                        Small, inspectable production examples
 docs/images/                     GitHub-readable visual explanations
+references/episode-package.md   Episode folder and merged-report contract
+scripts/build_episode_package.py Deterministic episode package/report builder
 ```
 
 ## Provenance and scope

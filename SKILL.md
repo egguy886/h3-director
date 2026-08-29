@@ -5,7 +5,7 @@ description: Direct and compile production-ready MiniMax H3 audiovisual prompts 
 
 # H3 Director
 
-Turn a story beat into a directed shot contract, then compile only visible and audible decisions into the official MiniMax H3 prompt format. Keep director analysis outside the generation prompt.
+Turn a story beat into an asset-first directed shot contract, then compile only visible and audible decisions into the official MiniMax H3 prompt format. Keep director analysis outside the generation prompt.
 
 ## Mandatory eight-step director gate
 
@@ -37,7 +37,7 @@ If the dependency is missing, stop prompt compilation and report the missing pat
 
 Classify the task before working:
 
-- `new_clip`: direct one standalone 4–15 second generation.
+- `new_clip`: direct one standalone 4-15 second generation.
 - `sequence_clip`: direct one module inside a connected episode or campaign.
 - `continuation`: begin from accepted footage's observed final state.
 - `take_review`: inspect a generated clip and issue a verdict.
@@ -186,5 +186,3 @@ Before delivery, verify:
 - the accepted take has a saved real end frame, and that exact frame is assigned to the next module's `Picture 1` / `ref_image_0`;
 - the final 0.3–0.5 seconds are stable enough to extract a useful handoff frame;
 - the final prompt passes `validate_h3_prompt.py`.
-
-
