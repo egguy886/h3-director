@@ -1,11 +1,26 @@
 ---
 name: h3-director
-description: Direct and compile production-ready MiniMax H3 audiovisual prompts for short films, vertical dramas, commercials, and connected 4–15 second clips. Use when a user wants professional director reasoning, camera/blocking/action/lighting/performance/sound design, Chinese H3 prompt prose with original-language overseas dialogue, H3 T2VA/I2VA/FL2VA/L2VA/Ref2VA prompts, ComfyUI reference-image upload maps, real-frame multi-clip continuity, generated-take review, or one-variable H3 prompt repair.
+description: Direct and compile production-ready MiniMax H3 audiovisual prompts for short films, vertical dramas, commercials, and connected 4-15 second clips. Use when a user wants an asset-first eight-step director workflow, professional camera/blocking/action/lighting/performance/sound design, Chinese H3 prompt prose with original-language overseas dialogue, H3 T2VA/I2VA/FL2VA/L2VA/Ref2VA prompts, ComfyUI reference-image upload maps, real-frame multi-clip continuity, generated-take review, or one-variable H3 prompt repair.
 ---
 
 # H3 Director
 
 Turn a story beat into a directed shot contract, then compile only visible and audible decisions into the official MiniMax H3 prompt format. Keep director analysis outside the generation prompt.
+
+## Mandatory eight-step director gate
+
+Every new, continuing, or repaired clip must pass the eight steps in `references/eight-step-director-workflow.md`, in order:
+
+1. fixed assets and primary authority;
+2. spatial map and screen direction;
+3. executable first frame (the accepted real end frame for continuations);
+4. one motivated camera move per shot and its endpoint;
+5. causal, readable action order and physics;
+6. dialogue, voice reference, diegetic sound, and silence;
+7. a stable, extractable last frame and handoff state;
+8. review of the actual take and a single continuity repair decision.
+
+Do not compile or deliver a final H3 prompt until the director contract contains all eight sections. A plan, summary, or label such as `continuation` never substitutes for an actual frame, spatial fact, action result, or observed take.
 
 ## Dependency gate
 
@@ -36,6 +51,7 @@ Load these references as needed:
 - Connected modules or continuation: `references/h3-sequence-continuity.md`.
 - Returned take, failure diagnosis, or repair: `references/h3-retake-protocol.md`.
 - Source and model-boundary questions: `references/provenance.md`.
+- Every narrative clip: `references/eight-step-director-workflow.md`.
 
 ## Intake
 
@@ -52,7 +68,7 @@ For a connected 15-second drama module, default to one main dramatic turn and no
 
 ## Direct before compiling
 
-For narrative work, complete the internal ten-field Director's Read in `references/directors-read-h3.md`. Do not paste its labels into the final H3 prompt.
+For narrative work, complete the internal ten-field Director's Read in `references/directors-read-h3.md`, then complete the eight-step director contract in `references/eight-step-director-workflow.md`. Do not paste either set of internal labels into the final H3 prompt.
 
 Then write a shot contract containing:
 
@@ -64,6 +80,8 @@ Then write a shot contract containing:
 6. motivated lighting sources and continuity;
 7. dialogue timing, scene sound, action sound, breathing, and silence;
 8. the final visual/audio state that the next clip can inherit.
+
+The visible director contract must use these headings in this order: `1. 固定资产`, `2. 明确空间`, `3. 规定首帧`, `4. 规定镜头运动`, `5. 规定动作顺序`, `6. 规定声音`, `7. 规定最后一帧`, `8. 连续性修正`. Run `scripts/validate_director_contract.py` before compiling the H3 prompt; use `--connected` for any continuation or episode-boundary handoff.
 
 Prioritize action legibility over spectacle. Simplify when identity, hands, contact, transformation, lip sync, or geography would otherwise compete for the same generation budget.
 
@@ -91,6 +109,8 @@ Use Chinese for subject definitions, summary, retention instructions, shot direc
 
 Use the official dependency format without adding custom top-level fields.
 
+The eight-step director gate is a prerequisite, not an additional H3 field. Never insert the eight step names, a Director's Read, or a custom `director_contract` field into the H3 prompt itself.
+
 - Base modes: emit the required alignment instruction, when applicable, followed by `integrated_multimodal_description`, `overall_soundscape`, and `non_diegetic_music`.
 - Ref2VA: emit exactly `subject_definitions`, `summary`, `retention_analysis`, `detailed_description`, `overall_soundscape`, and `non_diegetic_music` in that order.
 - Write rewrite prose in Chinese by default. Preserve dialogue, lyrics, and visible scene text in their requested original language; for overseas drama, dialogue remains the approved original English.
@@ -106,13 +126,20 @@ Run the structural validator after writing a prompt. Pass `--prompt-lang zh` for
 python scripts/validate_h3_prompt.py <prompt.txt> --mode ref2va --duration 15 --prompt-lang zh
 ```
 
+Validate the director contract separately:
+
+```powershell
+python scripts/validate_director_contract.py <director-contract.md>
+python scripts/validate_director_contract.py <director-contract.md> --connected
+```
+
 Fix every error. Review warnings with judgment; warnings are not automatic failures.
 
 ## Deliver
 
 Unless the user requests prompt-only output, return four clearly separated objects:
 
-1. **Director brief** in the user's language: function, turn, POV, action chain, camera/light/performance/sound intention, and endpoint.
+1. **Director contract/brief** in the user's language, with the eight required headings and the audience intention, action chain, camera/light/performance/sound intention, and endpoint.
 2. **Asset upload map** with exact Picture order and ComfyUI inputs.
 3. **H3 prompt** in one clean text block containing no commentary.
 4. **Continuity handoff** with planned endpoint and, after review, observed endpoint.
@@ -122,6 +149,8 @@ When saving files, keep the prompt and asset map beside the clip's assets. Do no
 ## Continue from accepted footage
 
 For sequences, follow `references/h3-sequence-continuity.md`. Planned state is provisional. Accepted footage's observed final state is canon. Never write the next prompt from a rejected take or from an unverified planned ending.
+
+The handoff must name the accepted source video, real end-frame file, physical endpoint, and next `<Picture 1>` / `ref_image_0`. If any of those are unknown, stop at the director contract and report the missing evidence instead of inventing continuity.
 
 Apply the **real-frame handoff rule** to every connected module and episode boundary:
 
@@ -144,6 +173,7 @@ For `REROLL`, preserve accepted assets and change one primary variable only. For
 
 Before delivery, verify:
 
+- all eight director steps are present and in order; the director contract passes `validate_director_contract.py`;
 - the dramatic turn is visible, not merely described;
 - camera movement has a narrative cause and a readable endpoint;
 - body weight, support, contact, transformation, and object motion follow a clear chain;

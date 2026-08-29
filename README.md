@@ -10,7 +10,8 @@ H3 Director turns a story beat into a compact, production-ready shot contract an
 
 ## What it solves
 
-- **Director reasoning** — dramatic turn, blocking, weight and support, eyelines, screen direction, motivated camera movement, lighting continuity, performance, and sound.
+- **Eight-step production gate** - fixed assets -> spatial map -> first frame -> motivated camera move -> causal action order -> layered sound -> stable last frame -> actual-take continuity repair.
+- **Director reasoning** – dramatic turn, blocking, weight and support, eyelines, screen direction, motivated camera movement, lighting continuity, performance, and sound.
 - **H3 compliance** — official top-level field order, stable subject/picture labels, exact dialogue tags, strict shot timings, and mode-specific compilation for Ref2VA and base modes.
 - **Reference discipline** — every image, video, or audio reference receives one primary authority; the ComfyUI map preserves the H3 Picture 1 → `ref_image_0` offset.
 - **Continuity** — accepted footage is treated as canon. Each accepted take gets real start/end frame assets; the exact accepted end frame becomes the next clip's Picture 1 / `ref_image_0` rather than an unverified plan.
@@ -21,10 +22,10 @@ H3 Director turns a story beat into a compact, production-ready shot contract an
 ![H3 Director review loop](docs/images/h3-director-review-loop.svg)
 
 1. Read the beat and recover known project decisions.
-2. Write the internal Director’s Read and a visible shot contract.
+2. Complete the eight-step director contract in `references/eight-step-director-workflow.md`.
 3. Assign reference authority and produce a ComfyUI upload map.
 4. Compile the final H3 prompt: Chinese directing prose by default, with approved overseas dialogue kept in the script's original English.
-5. Run the structural validator before generation.
+5. Run both the director-contract validator and the H3 structural validator before generation.
 6. Review the generated take, extract and record its real end frame, promote it only if accepted, and repair only what failed.
 
 ## Install for Codex
@@ -53,14 +54,18 @@ Prompt-language rule: the H3 prompt's directing prose is Chinese by default. For
 
 The skill returns four objects unless prompt-only output is requested:
 
-1. a director brief in the working language;
+1. an eight-section director contract/brief in the working language;
 2. an ordered asset upload map;
 3. one clean H3 prompt with no commentary;
 4. a continuity handoff for the next module.
 
 ## Validate a prompt locally
 
-The bundled validator checks H3 field order, reference labels, shot timing, speaker IDs, and duration bounds:
+The bundled validators check the eight director sections plus H3 field order, reference labels, shot timing, speaker IDs, and duration bounds:
+
+```powershell
+python scripts/validate_director_contract.py examples/blood-moon-bride-m01/director-contract.md --connected
+```
 
 ```powershell
 python scripts/validate_h3_prompt.py examples/blood-moon-bride-m01/prompt-ref2va.txt --mode ref2va --duration 15 --prompt-lang en
@@ -68,7 +73,7 @@ python scripts/validate_h3_prompt.py examples/blood-moon-bride-m01/prompt-ref2va
 
 For Chinese directing prose with original English overseas dialogue, use `--prompt-lang zh`; the validator then does not mistake ordinary Chinese instructions for visible generated text or apply an English-only word-count warning.
 
-The included example is a Ref2VA module from *Blood Moon Bride*: it contains a director brief, asset map, continuity handoff, validation record, and a ready-to-paste prompt.
+The included example is a Ref2VA module from *Blood Moon Bride*: it contains an eight-section director contract, asset map, continuity handoff, validation record, and a ready-to-paste prompt.
 
 ## Repository map
 
@@ -76,7 +81,9 @@ The included example is a Ref2VA module from *Blood Moon Bride*: it contains a d
 SKILL.md                         Runtime instructions loaded by Codex
 agents/openai.yaml               UI metadata for the skill chip
 references/                      Director and H3 reference material
-scripts/validate_h3_prompt.py    Deterministic structural validator
+scripts/validate_h3_prompt.py    Deterministic H3 structure validator
+scripts/validate_director_contract.py
+                                 Eight-step director contract validator
 examples/                        Small, inspectable production examples
 docs/images/                     GitHub-readable visual explanations
 ```
