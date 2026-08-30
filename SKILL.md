@@ -1,11 +1,11 @@
 ---
 name: h3-director
-description: Direct and compile production-ready MiniMax H3 audiovisual prompts for short films, vertical dramas, commercials, and connected 4-15 second clips. Use when a user wants an asset-first eight-step director workflow, professional camera/blocking/action/lighting/performance/sound design, Chinese H3 prompt prose with original-language overseas dialogue, H3 T2VA/I2VA/FL2VA/L2VA/Ref2VA prompts, ComfyUI reference-image upload maps, real-frame multi-clip continuity, generated-take review, or one-variable H3 prompt repair.
+description: Direct and compile production-ready MiniMax H3 audiovisual prompts and durable episode packages for short films, vertical dramas, commercials, and connected 4–15 second clips. Use when a user wants an asset-first eight-step director workflow, professional camera/blocking/action/lighting/performance/sound design, Chinese H3 prompt prose with original-language overseas dialogue, H3 T2VA/I2VA/FL2VA/L2VA/Ref2VA prompts, ComfyUI reference-image upload maps, grouped prompts and visual assets, browser-openable novel-art-style reports, real-frame multi-clip continuity, generated-take review, or one-variable H3 prompt repair.
 ---
 
 # H3 Director
 
-Turn a story beat into an asset-first directed shot contract, then compile only visible and audible decisions into the official MiniMax H3 prompt format. Keep director analysis outside the generation prompt.
+Turn a story beat into an asset-first directed shot contract, then compile only visible and audible decisions into the official MiniMax H3 prompt format. Keep director analysis and private production metadata outside the generation prompt.
 
 ## Mandatory eight-step director gate
 
@@ -105,6 +105,16 @@ For an overseas production, keep every spoken line in the script's original **En
 
 Use Chinese for subject definitions, summary, retention instructions, shot direction, camera, lighting, and sound descriptions. Use the official H3 labels such as `<Subject 1>` and `<Picture 1>` unchanged. The prompt may therefore be bilingual by design: Chinese production instructions plus original-language dialogue.
 
+## Keep production metadata out of the H3 prompt
+
+The H3 prompt is model-facing. H3 can use only the media connected to the current Conditioning node and the observable facts stated in the prompt; it does not know private episode/module IDs, filenames, acceptance history, local paths, or editorial notes.
+
+- Do not put labels such as `M01`, `M07`, `M08`, “上一段”, or “验收视频” into H3 fields as if they were references.
+- Do not put local paths, upload instructions, missing-file warnings, approval/rejection status, “尚未生成”, or “文件到位前不可执行” into H3 fields.
+- Replace provenance with the connected label (`<Picture N>`, `<Video N>`, or `<Audio N>`) and concrete visible state: pose, support, contact, prop placement, screen direction, light, and sound.
+- Use `<Video N>` only when the corresponding `ref_video_0` input is actually connected, and use `<Audio N>` only when an audio reference is actually connected. A narrative sequel is not automatically a video continuation.
+- Keep source IDs, accepted filenames, frame-extraction records, pending evidence, and upload status in the director brief, upload map, handoff, package README, or report—not in the clean prompt.
+
 ## Compile the H3 prompt
 
 Use the official dependency format without adding custom top-level fields.
@@ -113,7 +123,9 @@ The eight-step director gate is a prerequisite, not an additional H3 field. Neve
 
 - Base modes: emit the required alignment instruction, when applicable, followed by `integrated_multimodal_description`, `overall_soundscape`, and `non_diegetic_music`.
 - Ref2VA: emit exactly `subject_definitions`, `summary`, `retention_analysis`, `detailed_description`, `overall_soundscape`, and `non_diegetic_music` in that order.
-- Write rewrite prose in Chinese by default. Preserve dialogue, lyrics, and visible scene text in their requested original language; for overseas drama, dialogue remains the approved original English.
+- Match the task prefix to the actually connected media. Use a still-reference prefix such as `[keyframe completion + reference generation]` for connected pictures only. Use `[video continuation + keyframe completion + reference generation]` only when the same accepted source video is connected through `ref_video_0`.
+- Define `<Picture 1>` by its visible first-frame role and state, not by a private module name or file status. “从 `<Picture 1>` 所示的精确第一帧开始” is executable; “从 M07 验收视频尾帧开始” is not.
+- Write rewrite prose in Chinese by default. Preserve dialogue, lyrics, and visible scene text in their requested original language; for overseas drama, keep approved dialogue in original English inside `<d>[English] ...</d>`.
 - Use stable `<Subject N>`, `<Picture N>`, `<Video N>`, `<Audio N>`, and `(Sx)` identities.
 - Put only the language tag and exact spoken words inside `<d>...</d>`.
 - Keep cut times strictly increasing and within the requested duration. Shot 1 has no cut timestamp.
@@ -144,7 +156,7 @@ Unless the user requests prompt-only output, return four clearly separated objec
 3. **H3 prompt** in one clean text block containing no commentary.
 4. **Continuity handoff** with planned endpoint and, after review, observed endpoint.
 
-When saving files, keep the prompt and asset map beside the clip's assets. Do not overwrite an accepted version; create a new version.
+When saving files, keep the prompt and asset map beside the clip's assets. For upload-ready ComfyUI work, create a centralized per-clip folder such as `<clip>_upload_package_vNN` containing the clean prompt, assets in exact Picture order (or an explicit manifest), and a short upload README/map. Pending evidence and internal IDs belong in that documentation only. Do not overwrite an accepted version; create a new version.
 
 ## Continue from accepted footage
 
@@ -185,4 +197,6 @@ Before delivery, verify:
 - the ending creates a usable state or hook for the next module;
 - the accepted take has a saved real end frame, and that exact frame is assigned to the next module's `Picture 1` / `ref_image_0`;
 - the final 0.3–0.5 seconds are stable enough to extract a useful handoff frame;
+- the model-facing prompt contains no internal episode/module IDs, local paths, acceptance or missing-file status, or execution-gating prose;
+- the task prefix and `<Picture N>`/`<Video N>`/`<Audio N>` labels match the references actually connected in ComfyUI;
 - the final prompt passes `validate_h3_prompt.py`.

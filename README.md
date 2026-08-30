@@ -4,7 +4,7 @@
 
 H3 Director turns a story beat into a compact, production-ready shot contract and then compiles it into the official MiniMax H3 prompt schema. It is designed for vertical dramas, short films, commercials, music-video inserts, and connected 4–15 second clips made with T2VA, I2VA, FL2VA, L2VA, or Ref2VA.
 
-> 中文简介：这是一个面向 MiniMax H3 的导演型提示词 Skill。它先解决“观众要看懂什么、人物如何站住、镜头为什么移动、声音如何落地、下一段从哪里接”的导演问题，再按 H3 官方字段顺序生成可直接放进 ComfyUI 的英文提示词。它不把 Seedance 语法误塞进 H3，也不把导演分析污染到最终生成文本。
+> 中文简介：这是一个面向 MiniMax H3 的导演型提示词 Skill。它先解决“观众要看懂什么、人物如何站住、镜头为什么移动、声音如何落地、下一段从哪里接”的导演问题，再按 H3 官方字段顺序生成可直接放进 ComfyUI 的中文提示词；海外剧对白保留剧本批准的原版英文。它不把 Seedance 语法误塞进 H3，也不把导演分析或内部制作编号污染到最终生成文本。
 
 ![H3 Director pipeline](docs/images/h3-director-pipeline.svg)
 
@@ -15,6 +15,8 @@ H3 Director turns a story beat into a compact, production-ready shot contract an
 - **H3 compliance** — official top-level field order, stable subject/picture labels, exact dialogue tags, strict shot timings, and mode-specific compilation for Ref2VA and base modes.
 - **Reference discipline** — every image, video, or audio reference receives one primary authority; the ComfyUI map preserves the H3 Picture 1 → `ref_image_0` offset.
 - **Continuity** — accepted footage is treated as canon. Each accepted take gets real start/end frame assets; the exact accepted end frame becomes the next clip's Picture 1 / `ref_image_0` rather than an unverified plan.
+- **Model-facing prompt hygiene** — private module IDs, local paths, acceptance status, and missing-file notes stay in the handoff/upload map; the clean H3 prompt contains only connected media labels and executable visible state.
+- **Upload-ready packages** — prompts, exact ordered assets, and a README/map can be staged in one per-clip upload folder for ComfyUI.
 - **Retake control** — every review returns one verdict: `KEEP`, `POST-FIX`, `REROLL`, or `REWRITE`, with one controlling repair variable for a reroll.
 
 ## The production loop

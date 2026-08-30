@@ -27,6 +27,8 @@ Do not use a storyboard endpoint, an unverified keyframe, or a rejected take as 
 
 Extract the last valid decoded frame from the actual MP4, not a nominal `00:15.000` seek that may land on black, a duplicate frame, or a container padding frame. Check orientation, resolution, frame timing, visible identity, hand/object contact, and whether an unintended transition has already started. Reserve the final 0.3–0.5 seconds of a module for a stable handoff whenever the next module needs physical continuity. If the cut is intentionally editorial rather than physical, label it `editorial_cut` and create a new deliberate start frame.
 
+Keep the source clip ID, acceptance verdict, filename, frame-extraction record, and pending/unknown status in the handoff and upload package only. In the H3 prompt, refer to the connected media as `<Picture 1>` or `<Video 1>` and describe the visible endpoint: body position, support, contact, prop state, screen direction, light, and audible state. Do not write internal labels such as `M07` or “验收尾帧” as though H3 could resolve them. If the cut is editorial rather than physical, declare an editorial cut and provide a deliberate new opening frame.
+
 ## Required state
 
 Track:

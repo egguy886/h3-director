@@ -57,6 +57,10 @@ Continue by the same offset. A bypassed or empty node is not part of the current
 
 Before the user executes, verify that the active wires, not the visual placement of nodes, connect the intended images to the Conditioning node.
 
+## Model-facing boundary
+
+The upload map may record private production metadata, but the H3 prompt must stay executable from the current inputs. Do not put episode/module IDs, accepted/rejected labels, local paths, missing-file status, or “cannot execute until…” notes into H3 fields. Replace them with the connected label (`<Picture N>`, `<Video N>`, or `<Audio N>`) plus concrete visible state and role. A word such as `continuation` does not give H3 memory; only the connected media and a restated physical endpoint do.
+
 ## Asset table
 
 For every active asset, record:
