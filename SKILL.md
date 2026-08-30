@@ -158,6 +158,15 @@ Unless the user requests prompt-only output, return four clearly separated objec
 
 When saving files, keep the prompt and asset map beside the clip's assets. For upload-ready ComfyUI work, create a centralized per-clip folder such as `<clip>_upload_package_vNN` containing the clean prompt, assets in exact Picture order (or an explicit manifest), and a short upload README/map. Pending evidence and internal IDs belong in that documentation only. Do not overwrite an accepted version; create a new version.
 
+### Handoff assets are part of every clip package
+
+Treat frame handoff as a package lifecycle, not as an emergency step before the next generation:
+
+1. Before generation, the package's `START_FRAME` must be the previous accepted clip's real `END_FRAME` when physical continuity is intended; upload that file as `<Picture 1>` / `ref_image_0`.
+2. Keep an `END_FRAME` slot in the current clip package while the take is provisional. Do not fill it with a storyboard endpoint or a screenshot from an unaccepted take.
+3. Immediately after a take is accepted, decode and save its actual first valid frame and last decoded frame as versioned PNGs, record the source/video/frame metadata, and promote the end frame to the next clip's `START_FRAME`/`Picture 1`.
+4. A package is not upload-ready while a required start frame is marked pending. Report the missing source evidence in the package README/handoff and stop the connected generation rather than fabricating continuity.
+
 ## Continue from accepted footage
 
 For sequences, follow `references/h3-sequence-continuity.md`. Planned state is provisional. Accepted footage's observed final state is canon. Never write the next prompt from a rejected take or from an unverified planned ending.

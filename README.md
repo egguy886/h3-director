@@ -15,6 +15,7 @@ H3 Director turns a story beat into a compact, production-ready shot contract an
 - **H3 compliance** — official top-level field order, stable subject/picture labels, exact dialogue tags, strict shot timings, and mode-specific compilation for Ref2VA and base modes.
 - **Reference discipline** — every image, video, or audio reference receives one primary authority; the ComfyUI map preserves the H3 Picture 1 → `ref_image_0` offset.
 - **Continuity** — accepted footage is treated as canon. Each accepted take gets real start/end frame assets; the exact accepted end frame becomes the next clip's Picture 1 / `ref_image_0` rather than an unverified plan.
+- **Handoff lifecycle** — every clip package reserves its start/end frame slots; after acceptance, the actual decoded end frame is promoted directly into the next clip package, so no ad-hoc screenshot step is needed.
 - **Model-facing prompt hygiene** — private module IDs, local paths, acceptance status, and missing-file notes stay in the handoff/upload map; the clean H3 prompt contains only connected media labels and executable visible state.
 - **Upload-ready packages** — prompts, exact ordered assets, and a README/map can be staged in one per-clip upload folder for ComfyUI.
 - **Retake control** — every review returns one verdict: `KEEP`, `POST-FIX`, `REROLL`, or `REWRITE`, with one controlling repair variable for a reroll.
