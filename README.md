@@ -2,10 +2,6 @@
 
 **H3 Drama Director · 剧本转连续短剧片段的 Codex Skill**
 
-> **明确标识：本仓库发布的 Skill 是「H3 短剧总导演」**。
->
-> 仓库名：`h3-director` · Skill ID：`h3-drama-director`
-
 把单集或连续短剧剧本拆成可生产、可验证、可串行接力的 MiniMax H3 视频片段。默认规格为 `120 秒 = 8 段 × 15 秒`，也支持不跨场的 `scene-safe` 可变段数模式。
 
 ## 它解决什么问题
@@ -50,7 +46,7 @@ H3 官方格式编译 + 确定性校验
 直接克隆到 Codex Skills 目录：
 
 ```powershell
-git clone https://github.com/egguy886/h3-director.git "$env:USERPROFILE\.codex\skills\h3-director"
+git clone https://github.com/egguy886/h3-drama-director.git "$env:USERPROFILE\.codex\skills\h3-drama-director"
 ```
 
 或将本仓库目录复制到该位置。刷新或重启 Codex 后，使用：
@@ -59,7 +55,6 @@ git clone https://github.com/egguy886/h3-director.git "$env:USERPROFILE\.codex\s
 Use $h3-drama-director to turn this episode script into a validated H3 production package.
 ```
 
-仓库目录名是 `h3-director`，内部 Skill ID 是 `h3-drama-director`，界面显示名统一为“**H3 短剧总导演**”。
 
 ## 本地校验
 
