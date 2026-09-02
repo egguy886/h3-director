@@ -1,5 +1,5 @@
 interface:
-  display_name: "H3 Director"
-  short_description: "Use an eight-step director workflow to compile MiniMax H3 prompts and package episode assets"
-  default_prompt: "Use $h3-director: complete the eight-step asset-first director contract, map the references, compile a production-ready MiniMax H3 prompt, and package approved episode assets and reports."
+  display_name: "H3 短剧总导演"
+  short_description: "把剧本拆成连续、含原文对白且可串行接力的 H3 短剧片段"
+  default_prompt: "Use $h3-drama-director to turn this episode script into a validated H3 production package."
 

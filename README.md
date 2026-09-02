@@ -1,135 +1,99 @@
-# H3 Director
+# H3 短剧总导演
 
-**Director-first prompt compilation for MiniMax H3 audiovisual generation.**
+**H3 Drama Director · 剧本转连续短剧片段的 Codex Skill**
 
-H3 Director turns a story beat into a compact, production-ready shot contract and then compiles it into the official MiniMax H3 prompt schema. It is designed for vertical dramas, short films, commercials, music-video inserts, and connected 4–15 second clips made with T2VA, I2VA, FL2VA, L2VA, or Ref2VA.
+> **明确标识：本仓库发布的 Skill 是「H3 短剧总导演」**。
+>
+> 仓库名：`h3-director` · Skill ID：`h3-drama-director`
 
-> 中文简介：这是一个面向 MiniMax H3 的导演型提示词 Skill。它先解决“观众要看懂什么、人物如何站住、镜头为什么移动、声音如何落地、下一段从哪里接”的导演问题，再按 H3 官方字段顺序生成可直接放进 ComfyUI 的中文提示词；海外剧对白保留剧本批准的原版英文。它不把 Seedance 语法误塞进 H3，也不把导演分析或内部制作编号污染到最终生成文本。
+把单集或连续短剧剧本拆成可生产、可验证、可串行接力的 MiniMax H3 视频片段。默认规格为 `120 秒 = 8 段 × 15 秒`，也支持不跨场的 `scene-safe` 可变段数模式。
 
-![H3 Director pipeline](docs/images/h3-director-pipeline.svg)
+## 它解决什么问题
 
-## What it solves
+- 剧本节拍按场次和顺序完整覆盖，每个节拍恰好认领一次。
+- 剧本批准对白建立不可变台账，逐字保留原文，不翻译、不改写、不删减、不擅自补写。
+- 每段经过八步导演契约：空间调度、视线与轴线、动作因果、表演、灯光、声音、运镜和段尾状态。
+- 运镜使用有叙事动机的景别、角度、运动和终点，并过滤不属于 H3 的其他平台语法。
+- 按 H3 官方字段和标签编译：`<Subject N>`、`<Picture N>`、`<d>[Language] ...</d>`。
+- 生成采用“批量规划、串行投产”：只有验收通过的真实尾帧，才能解锁下一段的首帧重编译。
+- 生成后审查对白、口型、人物一致性、道具、银幕方向、光线、尾帧和整集拼接，不把未验收片段接入连续性链路。
 
-- **Eight-step production gate** - fixed assets -> spatial map -> first frame -> motivated camera move -> causal action order -> layered sound -> stable last frame -> actual-take continuity repair.
-- **Director reasoning** – dramatic turn, blocking, weight and support, eyelines, screen direction, motivated camera movement, lighting continuity, performance, and sound.
-- **H3 compliance** — official top-level field order, stable subject/picture labels, exact dialogue tags, strict shot timings, and mode-specific compilation for Ref2VA and base modes.
-- **Reference discipline** — every image, video, or audio reference receives one primary authority; the ComfyUI map preserves the H3 Picture 1 → `ref_image_0` offset.
-- **Continuity** — accepted footage is treated as canon. Each accepted take gets real start/end frame assets; the exact accepted end frame becomes the next clip's Picture 1 / `ref_image_0` rather than an unverified plan.
-- **Handoff lifecycle** — every clip package reserves its start/end frame slots; after acceptance, the actual decoded end frame is promoted directly into the next clip package, so no ad-hoc screenshot step is needed.
-- **Model-facing prompt hygiene** — private module IDs, local paths, acceptance status, and missing-file notes stay in the handoff/upload map; the clean H3 prompt contains only connected media labels and executable visible state.
-- **Upload-ready packages** — prompts, exact ordered assets, and a README/map can be staged in one per-clip upload folder for ComfyUI.
-- **Retake control** — every review returns one verdict: `KEEP`, `POST-FIX`, `REROLL`, or `REWRITE`, with one controlling repair variable for a reroll.
+## 核心工作流
 
-## The production loop
-
-![H3 Director review loop](docs/images/h3-director-review-loop.svg)
-
-1. Read the beat and recover known project decisions.
-2. Complete the eight-step director contract in `references/eight-step-director-workflow.md`.
-3. Assign reference authority and produce a ComfyUI upload map.
-4. Compile the final H3 prompt: Chinese directing prose by default, with approved overseas dialogue kept in the script's original English.
-5. Run both the director-contract validator and the H3 structural validator before generation.
-6. Review the generated take, extract and record its real end frame, promote it only if accepted, and repair only what failed.
-
-## Install for Codex
-
-Copy the repository folder to your Codex skills directory:
-
-```powershell
-Copy-Item -Recurse -Force . "$env:USERPROFILE\.codex\skills\h3-director"
+```text
+剧本 / 批准对白
+        ↓
+节拍解析与切段（一次规划完整集）
+        ↓
+导演调度与八步契约
+        ↓
+H3 官方格式编译 + 确定性校验
+        ↓
+片段 N 生成与验收
+        ↓ KEEP：提取真实尾帧并观察物理状态
+        ↓
+片段 N+1 以真实尾帧重新编译后再投产
+        ↓
+只拼接已验收片段，完成整集审查
 ```
 
-Or clone it directly:
+## 对白硬规则
+
+有对白的节拍必须同时出现在片段对白表和最终 H3 提示词中，并与剧本批准版本逐字一致。画内对白必须安排可见嘴部和足够发声时间；剧本有对白时禁止使用静音或“无可辨识对白”指令。对白无法自然装入时长，必须重新切段或调整规格，不能删词或强行加速。
+
+## 视觉增强边界
+
+可以增加天气、材质反馈、非因果特效、背景生命、灯光和表演微动作，但必须单列为 `visualEmbellishments` 并声明 `narrativeImpact: "none"`。不得新增对白、信息、动机、关键道具、角色介入、胜负结果、时间地点或事件顺序。
+
+## 在 Codex 中安装
+
+直接克隆到 Codex Skills 目录：
 
 ```powershell
 git clone https://github.com/egguy886/h3-director.git "$env:USERPROFILE\.codex\skills\h3-director"
 ```
 
-Restart or refresh Codex after installation so the skill index can discover `SKILL.md`.
-
-## Use it
-
-Ask for the task in production language, for example:
-
-> Use H3 Director. Turn this 15-second vertical drama beat into a Ref2VA prompt, an exact ComfyUI asset map, and a continuity handoff. Keep the dialogue in natural American English and use scene sound only, with no non-diegetic score.
-
-Prompt-language rule: the H3 prompt's directing prose is Chinese by default. For an overseas drama, keep the script-approved dialogue in original English inside the official `<d>[English]...</d>` tag; do not translate or replace it.
-
-The skill returns four objects unless prompt-only output is requested:
-
-1. an eight-section director contract/brief in the working language;
-2. an ordered asset upload map;
-3. one clean H3 prompt with no commentary;
-4. a continuity handoff for the next module.
-
-## Validate a prompt locally
-
-The bundled validators check the eight director sections plus H3 field order, reference labels, shot timing, speaker IDs, and duration bounds:
-
-```powershell
-python scripts/validate_director_contract.py examples/blood-moon-bride-m01/director-contract.md --connected
-```
-
-```powershell
-python scripts/validate_h3_prompt.py examples/blood-moon-bride-m01/prompt-ref2va.txt --mode ref2va --duration 15 --prompt-lang en
-```
-
-For Chinese directing prose with original English overseas dialogue, use `--prompt-lang zh`; the validator then does not mistake ordinary Chinese instructions for visible generated text or apply an English-only word-count warning.
-
-The included example is a Ref2VA module from *Blood Moon Bride*: it contains an eight-section director contract, asset map, continuity handoff, validation record, and a ready-to-paste prompt.
-
-## Package a complete episode
-
-When a sequence has approved prompts and visual assets, keep the production handoff in one episode folder instead of scattering files across a project drive. The package contract is documented in [`references/episode-package.md`](references/episode-package.md) and can be built with the bundled deterministic script:
-
-![H3 Director episode package](docs/images/h3-episode-package.svg)
-
-```powershell
-python scripts/build_episode_package.py `
-  --episode-id EP001 `
-  --title "Last Antidote" `
-  --source "D:\project\episodes\ep001.md" `
-  --prompts-dir "D:\project\prompts" `
-  --assets-root characters="D:\project\assets\characters" `
-  --assets-root scenes="D:\project\assets\scenes" `
-  --assets-root keyframes="D:\project\assets\keyframes" `
-  --assets-root props="D:\project\assets\props" `
-  --upload-map "D:\project\upload-map\EP001_UPLOAD_MAP.md" `
-  --continuity "D:\project\continuity\EP001_CONTINUITY.md" `
-  --art-json "D:\project\novel-art\EP001-art.json" `
-  --novel-art-report "D:\project\novel-art\art-report.html" `
-  --novel-art-images "D:\project\novel-art\images" `
-  --out "D:\project\episodes\EP001"
-```
-
-The result contains `prompts/`, categorized `assets/`, `upload-map/`, `continuity/`, and `report/episode-report.html`. The merged report previews local images, exposes prompt copy/download actions, shows validator status, links to the optional full `novel-art` report, and exports an `episode-manifest.json`. The clean `.txt` prompts remain the H3 source of truth.
-
-The inspectable example at [`examples/blood-moon-bride-m01/episode-package/EP001/`](examples/blood-moon-bride-m01/episode-package/EP001/) is built with the same contract; open its `report/episode-report.html` to see the navigation surface.
-
-## Repository map
+或将本仓库目录复制到该位置。刷新或重启 Codex 后，使用：
 
 ```text
-SKILL.md                         Runtime instructions loaded by Codex
-agents/openai.yaml               UI metadata for the skill chip
-references/                      Director and H3 reference material
-scripts/validate_h3_prompt.py    Deterministic H3 structure validator
-scripts/validate_director_contract.py
-                                 Eight-step director contract validator
-examples/                        Small, inspectable production examples
-docs/images/                     GitHub-readable visual explanations
-references/episode-package.md   Episode folder and merged-report contract
-scripts/build_episode_package.py Deterministic episode package/report builder
+Use $h3-drama-director to turn this episode script into a validated H3 production package.
 ```
 
-## Provenance and scope
+仓库目录名是 `h3-director`，内部 Skill ID 是 `h3-drama-director`，界面显示名统一为“**H3 短剧总导演**”。
 
-The H3 field rules are aligned to MiniMax’s official prompt-writing skill. The director layer is an original workflow that adapts production reasoning from multimodal video direction patterns, including the Seedance 2.0 director reference listed in [`references/provenance.md`](references/provenance.md). This repository is an independent community project and is not affiliated with MiniMax, OpenAI, or the Seedance authors.
+## 本地校验
 
-- [MiniMax H3 prompt-writing skill](https://github.com/MiniMax-AI/MiniMax-H3/tree/main/skills/h3-prompt-writing)
-- [Seedance 2.0 reference](https://github.com/Emily2040/seedance-2.0)
+仓库内的确定性脚本只负责生产包校验、对白 SHA-256、真实尾帧接力和自测，不会自行调用付费视频 API：
 
-## License
+```powershell
+node scripts/h3-drama-director.mjs validate <episode-package.json>
+node scripts/h3-drama-director.mjs validate <episode-package.json> --check-assets
+node scripts/h3-drama-director.mjs checksum <dialogue-text-file>
+node scripts/h3-drama-director.mjs handoff <episode-package.json> --segment M01 --take T01 --frame <accepted-tail-frame.png> --state <observed-state.json> --out <new-package.json>
+node scripts/selftest.mjs
+```
 
-MIT. See [`LICENSE`](LICENSE).
+## 仓库结构
 
+```text
+SKILL.md                         Codex 加载的主规则
+agents/openai.yaml               Codex 界面显示名与默认提示
+references/schema.md              规格与生产包 Schema
+references/story-and-dialogue.md 剧情节拍与对白 Canon
+references/directing-and-continuity.md 导演契约与真实尾帧接力
+references/h3-compilation.md     H3 官方提示词编译边界
+references/review.md              片段与整集审查规则
+references/provenance.md          来源、裁决与边界
+scripts/h3-drama-director.mjs    校验、校验和与 handoff 工具
+scripts/selftest.mjs              回归测试
+```
 
+## 责任边界
+
+本 Skill 负责剧本解析、切段规划、导演调度、H3 提示词编译、确定性校验和生成结果审查。调用付费视频 API、批量生成、重试和发布，仍需当前任务的明确授权，并应在投产前确认必要视觉资产和对白版本完备。
+
+## 来源与许可证
+
+本版本整合剧本转片段分镜、导演调度、H3 官方提示词结构及镜头语言方法；规则来源和适用边界见 [`references/provenance.md`](references/provenance.md)。
+
+本项目采用 MIT License，详见 [`LICENSE`](LICENSE)。

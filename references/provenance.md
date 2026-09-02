@@ -1,17 +1,19 @@
-# Provenance and Model Boundary
+# 来源、裁决与边界
 
-This skill is an original H3-focused synthesis informed by two public sources:
+本 Skill 根据以下材料重新设计，而不是在运行时叠加多个互相冲突的入口：
 
-- MiniMax H3 official prompt-writing skill: https://github.com/MiniMax-AI/MiniMax-H3/tree/main/skills/h3-prompt-writing
-- Seedance 2.0 Skill OS by Emily2040: https://github.com/Emily2040/seedance-2.0
-- Higgsfield case-study workflow: https://higgsfield.ai/blog/case4k
+- `novel-storyboard`：继承场次/节拍/片段分层、节拍恰好认领一次、时长与对白容量校验思想。
+- `h3-director`：继承八步导演契约、空间和轴线、真实尾帧接力、KEEP/REROLL/REWRITE 与单变量返修。
+- MiniMax 官方 `h3-prompt-writing`：继承并唯一控制 H3 模式、字段、顺序、对齐句、引用标签、speaker ID、`<d>`、声音字段和英文 rewrite 规则。
+- [RICKY556677/ai-film-skills](https://github.com/RICKY556677/ai-film-skills)：仅吸收可迁移的机位几何、运镜触发、表演行为、灯光物理和动作因果方法。
 
-The MiniMax files define the H3 output contract and remain the authority for supported modes, field names, timing notation, reference labels, speaker IDs, dialogue tags, soundscape, and music sections.
+冲突裁决：
 
-The Seedance repository informs transferable filmmaking practice: read dramatic function before choosing technique; motivate camera, blocking, light, performance, and sound from one intention; assign reference roles; continue from accepted observed footage; and repair one variable at a time. This skill restates and adapts those ideas for H3 rather than importing Seedance platform syntax or capability claims.
+- 批量规划与真实尾帧生产：规划批量，生成串行。
+- 中文导演散文与官方英文 rewrite：工作文档可中文，最终 H3 非对白正文固定英文。
+- 计划尾帧与实际生成结果：验收 take 的真实尾帧覆盖计划。
+- 其他平台标签与 H3：方法可迁移，语法和能力声明不可迁移。
+- 视觉增强与剧情忠实：增强只能存在于无叙事影响的独立字段。
 
-The Higgsfield case study adds an asset-first production order: build fixed character/location/prop references, map the space before the shot, define a first frame, camera path, causal action, diegetic sound, and a stable endpoint, then revise from the observed take. Those practices are platform-neutral director guidance; the case study's Seedance, Claude, 4K, and 8K references are not H3 capability claims.
-
-Do not infer H3 capabilities, limits, node behavior, prices, or API availability from Seedance documentation. Recheck the MiniMax repository when such facts matter.
-
+不得引用电影导演姓名来替代可执行镜头设计，不得宣称 H3 支持官方材料未说明的控制参数，也不得把本 Skill 的校验通过误写成模型一定生成成功。
 

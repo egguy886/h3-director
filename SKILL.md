@@ -1,211 +1,76 @@
 ---
-name: h3-director
-description: Direct and compile production-ready MiniMax H3 audiovisual prompts and durable episode packages for short films, vertical dramas, commercials, and connected 4–15 second clips. Use when a user wants an asset-first eight-step director workflow, professional camera/blocking/action/lighting/performance/sound design, Chinese H3 prompt prose with original-language overseas dialogue, H3 T2VA/I2VA/FL2VA/L2VA/Ref2VA prompts, ComfyUI reference-image upload maps, grouped prompts and visual assets, browser-openable novel-art-style reports, real-frame multi-clip continuity, generated-take review, or one-variable H3 prompt repair.
+name: h3-drama-director
+description: 把单集或连续短剧剧本拆成可配置的 H3 视频片段，锁定剧情节拍与逐字对白，完成导演调度、官方 H3 提示词编译、真实尾帧串行接力和成片验收。适用于剧本转整集 H3 生产包；不用于普通单镜头润色或未经授权直接调用视频生成 API。
 ---
 
-# H3 Director
+# H3 短剧总导演
 
-Turn a story beat into an asset-first directed shot contract, then compile only visible and audible decisions into the official MiniMax H3 prompt format. Keep director analysis and private production metadata outside the generation prompt.
+把剧本变成可生产、可验证、可串行接力的 H3 整集方案。默认交付规格是 `120 秒 = 8 段 × 15 秒`，同时支持不跨场的可变段数模式。
 
-## Mandatory eight-step director gate
+## 权威顺序
 
-Every new, continuing, or repaired clip must pass the eight steps in `references/eight-step-director-workflow.md`, in order:
+发生冲突时按以下顺序裁决：
 
-1. fixed assets and primary authority;
-2. spatial map and screen direction;
-3. executable first frame (the accepted real end frame for continuations);
-4. one motivated camera move per shot and its endpoint;
-5. causal, readable action order and physics;
-6. dialogue, voice reference, diegetic sound, and silence;
-7. a stable, extractable last frame and handoff state;
-8. review of the actual take and a single continuity repair decision.
+1. 用户批准的剧本、对白版本和交付规格。
+2. 本 Skill 的 H3 官方格式规则。
+3. 剧情全覆盖、导演调度、连续性和验收规则。
+4. 运镜、表演、灯光和动作设计方法。
 
-Do not compile or deliver a final H3 prompt until the director contract contains all eight sections. A plan, summary, or label such as `continuation` never substitutes for an actual frame, spatial fact, action result, or observed take.
+不得用镜头创意覆盖剧情事实，不得用其他视频平台语法覆盖 H3 语法。
 
-## Dependency gate
+## 按阶段读取
 
-Before drafting an H3 prompt:
+- 开始解析剧本、选择规格或切段时，读取 [schema.md](references/schema.md) 和 [story-and-dialogue.md](references/story-and-dialogue.md)。
+- 安排表演、空间、运镜、段尾交接或返修时，读取 [directing-and-continuity.md](references/directing-and-continuity.md)。
+- 编译任何 H3 提示词前，必须读取 [h3-compilation.md](references/h3-compilation.md)。这是最终格式唯一权威。
+- 检查提示词、生成片段或整集拼接时，读取 [review.md](references/review.md)。
+- 需要核对规则来源和可迁移边界时，读取 [provenance.md](references/provenance.md)。
 
-1. Read `../h3-prompt-writing/SKILL.md` completely.
-2. For T2VA, I2VA, FL2VA, or L2VA, read `../h3-prompt-writing/references/base-en.txt` completely.
-3. For Ref2VA, read both `../h3-prompt-writing/references/base-en.txt` and `../h3-prompt-writing/references/ref-en.txt` completely.
-4. Treat those files as the final authority for H3 field names, field order, labels, speaker IDs, dialogue tags, shot timing, and alignment instructions.
+## 必须执行的工作流
 
-If the dependency is missing, stop prompt compilation and report the missing path. Never substitute Seedance syntax such as `@Image1` for H3 labels.
+1. 把剧本解析成按场次排序的原子节拍。保留场次、动作、说话人、对白原文、对白语言、画内/画外属性和源位置。
+2. 建立不可变的对白台账。默认 `approvedDialogue` 必须与 `sourceDialogue` 完全相同，并计算 SHA-256；未经用户明确批准，不得翻译、改写、删减或增加。
+3. 选择生产 profile：
+   - 默认 `fixed-delivery`：严格 8 段，每段 15 秒；必要时允许一段内有一次明确的编辑换景。
+   - `scene-safe`：每段不超过 15 秒且绝不跨场，段数自动。
+4. 一次规划完整集。每个源节拍必须被恰好一段认领，顺序不变；先检查对白容量，再设计镜头。
+5. 每段只设一个主要戏剧任务和一个可见转折，并填写八步导演契约。
+6. 分离不可变剧情与可变连续性：节拍、对白、结果不可动；Picture 1、开场物理状态、镜头起点和局部调度等待真实尾帧回填。
+7. 按官方 H3 模式编译提示词。非对白正文使用英文；对白保持批准版本及原语言，逐句写入 `<d>[Language] ...</d>`。
+8. 运行确定性校验。任何错误都必须修复；语义警告需要人工或模型复核。
+9. 生成必须串行推进。段 N 只有在验收为 KEEP 后才能输出真实尾帧和观察状态；该 handoff 令段 N+1 进入 `RECOMPILE`，不得直接进入投产态。
+10. 段 N+1 根据真实首帧重新编译开场描述和调度，将 `promptCompiledForTakeId` 写成来源 take ID，再次校验通过后才可标记 `GENERATION_READY`。
+11. 逐段检查实际对白、口型、人物、道具、银幕方向、光线和尾帧。被拒或被替代的 take 永远不得进入接力链。
+12. 只拼接已验收片段，再做整集剧情、对白音频、声画同步和段间衔接审查。
 
-## Route the request
+## 对白硬门禁
 
-Classify the task before working:
+- 有对白的节拍必须在片段对白表和 H3 `<d>` 中各出现一次且完全一致。
+- 画内对白必须安排可见嘴部和足够发声时间；画外音或旁白必须由剧本明确标注。
+- 源节拍有对白时，禁止出现 `No intelligible dialogue` 或任何等价静音指令。
+- 对白装不进规定时长时，重新切段或更换 profile；不得靠删词、改词或不自然加速解决。
 
-- `new_clip`: direct one standalone 4-15 second generation.
-- `sequence_clip`: direct one module inside a connected episode or campaign.
-- `continuation`: begin from accepted footage's observed final state.
-- `take_review`: inspect a generated clip and issue a verdict.
-- `repair`: change one controlling variable after diagnosis.
+## 视觉增强边界
 
-Load these references as needed:
+视觉增强必须单列为 `visualEmbellishments`，使用允许类型并声明 `narrativeImpact: "none"`。可以增强天气、材质反馈、非因果特效、背景生命、灯光和表演微动作；不得新增对白、信息、动机、关键道具、角色介入、胜负结果、时间地点或事件顺序。
 
-- Any narrative or performer-led clip: `references/directors-read-h3.md`.
-- Shot design, camera, blocking, action, light, dialogue, or sound: `references/directing-engine-h3.md` and `references/h3-shot-and-action-language.md`.
-- Any image, video, or audio reference: `references/h3-reference-authority.md`.
-- Connected modules or continuation: `references/h3-sequence-continuity.md`.
-- Returned take, failure diagnosis, or repair: `references/h3-retake-protocol.md`.
-- Source and model-boundary questions: `references/provenance.md`.
-- Every narrative clip: `references/eight-step-director-workflow.md`.
-
-## Intake
-
-Recover known decisions from the conversation and project files before asking questions. Establish only what changes the result:
-
-- story beat and intended endpoint;
-- duration, aspect ratio, frame rate, and H3 mode;
-- reference assets and what each must control;
-- spoken language, exact dialogue, voice requirements, ambience, and music choice;
-- previous accepted clip or final frame for continuation;
-- known generation failures and user non-negotiables.
-
-For a connected 15-second drama module, default to one main dramatic turn and no audience-only music (`non_diegetic_music: N/A`) unless the project bible or user requests a continuous score.
-
-## Direct before compiling
-
-For narrative work, complete the internal ten-field Director's Read in `references/directors-read-h3.md`, then complete the eight-step director contract in `references/eight-step-director-workflow.md`. Do not paste either set of internal labels into the final H3 prompt.
-
-Then write a shot contract containing:
-
-1. one-sentence audience intention;
-2. initial state, trigger, decisive change, response, follow-through, and local endpoint;
-3. POV and screen direction;
-4. subject blocking, weight, support, contact, eyeline, and one playable performance behavior;
-5. one primary motivated camera move per shot, including endpoint;
-6. motivated lighting sources and continuity;
-7. dialogue timing, scene sound, action sound, breathing, and silence;
-8. the final visual/audio state that the next clip can inherit.
-
-The visible director contract must use these headings in this order: `1. 固定资产`, `2. 明确空间`, `3. 规定首帧`, `4. 规定镜头运动`, `5. 规定动作顺序`, `6. 规定声音`, `7. 规定最后一帧`, `8. 连续性修正`. Run `scripts/validate_director_contract.py` before compiling the H3 prompt; use `--connected` for any continuation or episode-boundary handoff.
-
-Prioritize action legibility over spectacle. Simplify when identity, hands, contact, transformation, lip sync, or geography would otherwise compete for the same generation budget.
-
-## Assign reference authority
-
-Follow `references/h3-reference-authority.md` and give every asset one primary role. State what transfers and what must not transfer. Drop assets that own no required dimension.
-
-For ComfyUI, output an explicit upload map:
-
-| H3 label | File | Primary role | Do not transfer | Node input |
-|---|---|---|---|---|
-| `<Picture 1>` | absolute filename | environment/keyframe/etc. | excluded traits | `ref_image_0` |
-
-Number H3 pictures from 1 while Comfy inputs begin at 0. Preserve that offset exactly.
-
-## Prompt language policy
-
-Default the compiled H3 prompt's narrative and directing prose to **Chinese** unless the user explicitly requests another prompt language. This is a language choice, not a schema change: keep the official H3 top-level field names, field order, reference labels, speaker IDs, timing syntax, and dialogue tags exactly as required by `h3-prompt-writing`.
-
-For an overseas production, keep every spoken line in the script's original **English** inside `<d>[English] ...</d>`. Preserve the approved wording and speaker; do not translate it into Chinese, paraphrase it, or invent a replacement merely to match the Chinese prompt prose. If the source script supplies only Chinese dialogue and the user has not approved an English adaptation, stop and flag the missing approved English line rather than silently rewriting it.
-
-Use Chinese for subject definitions, summary, retention instructions, shot direction, camera, lighting, and sound descriptions. Use the official H3 labels such as `<Subject 1>` and `<Picture 1>` unchanged. The prompt may therefore be bilingual by design: Chinese production instructions plus original-language dialogue.
-
-## Keep production metadata out of the H3 prompt
-
-The H3 prompt is model-facing. H3 can use only the media connected to the current Conditioning node and the observable facts stated in the prompt; it does not know private episode/module IDs, filenames, acceptance history, local paths, or editorial notes.
-
-- Do not put labels such as `M01`, `M07`, `M08`, “上一段”, or “验收视频” into H3 fields as if they were references.
-- Do not put local paths, upload instructions, missing-file warnings, approval/rejection status, “尚未生成”, or “文件到位前不可执行” into H3 fields.
-- Replace provenance with the connected label (`<Picture N>`, `<Video N>`, or `<Audio N>`) and concrete visible state: pose, support, contact, prop placement, screen direction, light, and sound.
-- Use `<Video N>` only when the corresponding `ref_video_0` input is actually connected, and use `<Audio N>` only when an audio reference is actually connected. A narrative sequel is not automatically a video continuation.
-- Keep source IDs, accepted filenames, frame-extraction records, pending evidence, and upload status in the director brief, upload map, handoff, package README, or report—not in the clean prompt.
-
-## Compile the H3 prompt
-
-Use the official dependency format without adding custom top-level fields.
-
-The eight-step director gate is a prerequisite, not an additional H3 field. Never insert the eight step names, a Director's Read, or a custom `director_contract` field into the H3 prompt itself.
-
-- Base modes: emit the required alignment instruction, when applicable, followed by `integrated_multimodal_description`, `overall_soundscape`, and `non_diegetic_music`.
-- Ref2VA: emit exactly `subject_definitions`, `summary`, `retention_analysis`, `detailed_description`, `overall_soundscape`, and `non_diegetic_music` in that order.
-- Match the task prefix to the actually connected media. Use a still-reference prefix such as `[keyframe completion + reference generation]` for connected pictures only. Use `[video continuation + keyframe completion + reference generation]` only when the same accepted source video is connected through `ref_video_0`.
-- Define `<Picture 1>` by its visible first-frame role and state, not by a private module name or file status. “从 `<Picture 1>` 所示的精确第一帧开始” is executable; “从 M07 验收视频尾帧开始” is not.
-- Write rewrite prose in Chinese by default. Preserve dialogue, lyrics, and visible scene text in their requested original language; for overseas drama, keep approved dialogue in original English inside `<d>[English] ...</d>`.
-- Use stable `<Subject N>`, `<Picture N>`, `<Video N>`, `<Audio N>`, and `(Sx)` identities.
-- Put only the language tag and exact spoken words inside `<d>...</d>`.
-- Keep cut times strictly increasing and within the requested duration. Shot 1 has no cut timestamp.
-- Put dialogue in the shot body, physical/ambient audio in `overall_soundscape`, and audience-only score in `non_diegetic_music`.
-- Prefer concrete observable action to emotional adjectives and generic words such as “cinematic,” “epic,” or “dynamic.”
-
-Run the structural validator after writing a prompt. Pass `--prompt-lang zh` for the default Chinese prompt prose; use `--prompt-lang en` for English prose:
+## 本地校验命令
 
 ```powershell
-python scripts/validate_h3_prompt.py <prompt.txt> --mode ref2va --duration 15 --prompt-lang zh
+node scripts/h3-drama-director.mjs validate <episode-package.json>
+node scripts/h3-drama-director.mjs validate <episode-package.json> --check-assets
+node scripts/h3-drama-director.mjs checksum <dialogue-text-file>
+node scripts/h3-drama-director.mjs handoff <episode-package.json> --segment M01 --take T01 --frame <accepted-tail-frame.png> --state <observed-state.json> --out <new-package.json>
 ```
 
-Validate the director contract separately:
+`handoff` 只写显式 `--out`，不得覆盖输入包。运行测试：
 
 ```powershell
-python scripts/validate_director_contract.py <director-contract.md>
-python scripts/validate_director_contract.py <director-contract.md> --connected
+node scripts/selftest.mjs
 ```
 
-Fix every error. Review warnings with judgment; warnings are not automatic failures.
+## 停止条件
 
-## Deliver
+遇到以下任一情况，不得继续投产：剧本或批准对白版本不明确；对白容量超限；必要资产缺失；H3 字段或标签不合法；上一段没有验收通过的真实尾帧；下一段尚未针对该 take 重新编译；生成片段实际对白与台账不一致。
 
-Unless the user requests prompt-only output, return four clearly separated objects:
-
-1. **Director contract/brief** in the user's language, with the eight required headings and the audience intention, action chain, camera/light/performance/sound intention, and endpoint.
-2. **Asset upload map** with exact Picture order and ComfyUI inputs.
-3. **H3 prompt** in one clean text block containing no commentary.
-4. **Continuity handoff** with planned endpoint and, after review, observed endpoint.
-
-When saving files, keep the prompt and asset map beside the clip's assets. For upload-ready ComfyUI work, create a centralized per-clip folder such as `<clip>_upload_package_vNN` containing the clean prompt, assets in exact Picture order (or an explicit manifest), and a short upload README/map. Pending evidence and internal IDs belong in that documentation only. Do not overwrite an accepted version; create a new version.
-
-### Handoff assets are part of every clip package
-
-Treat frame handoff as a package lifecycle, not as an emergency step before the next generation:
-
-1. Before generation, the package's `START_FRAME` must be the previous accepted clip's real `END_FRAME` when physical continuity is intended; upload that file as `<Picture 1>` / `ref_image_0`.
-2. Keep an `END_FRAME` slot in the current clip package while the take is provisional. Do not fill it with a storyboard endpoint or a screenshot from an unaccepted take.
-3. Immediately after a take is accepted, decode and save its actual first valid frame and last decoded frame as versioned PNGs, record the source/video/frame metadata, and promote the end frame to the next clip's `START_FRAME`/`Picture 1`.
-4. A package is not upload-ready while a required start frame is marked pending. Report the missing source evidence in the package README/handoff and stop the connected generation rather than fabricating continuity.
-
-## Continue from accepted footage
-
-For sequences, follow `references/h3-sequence-continuity.md`. Planned state is provisional. Accepted footage's observed final state is canon. Never write the next prompt from a rejected take or from an unverified planned ending.
-
-The handoff must name the accepted source video, real end-frame file, physical endpoint, and next `<Picture 1>` / `ref_image_0`. If any of those are unknown, stop at the director contract and report the missing evidence instead of inventing continuity.
-
-Apply the **real-frame handoff rule** to every connected module and episode boundary:
-
-1. After each generated take, inspect the actual MP4 and save its first valid frame and last valid decoded frame as versioned PNG assets.
-2. Promote frames only after the take is accepted. A rejected take's frames never enter the continuity chain.
-3. The accepted `Mxx_END_FRAME` becomes the next module's `M(next)_START_FRAME` and must be uploaded as `<Picture 1>` / `ref_image_0`.
-4. If `ref_video_0` is used, it must be the same accepted source video that produced that end frame. Do not mix a still from one take with a video from another.
-5. State the physical endpoint explicitly in the new prompt; labels such as “continuation” do not give H3 memory of a previous clip.
-6. Stage the final 0.3–0.5 seconds as a readable handoff: no unplanned cut, new character, prop teleport, or unresolved transformation in the final frame unless the next module is designed to consume it.
-
-Use stable names such as `EP001_M03_END_FRAME_v01.png` and `EP001_M04_START_FRAME_v01.png`. Record the accepted source, frame timestamps or decoder position, and a hash when the pipeline supports it. For an intentional editorial hard cut, mark the handoff as `editorial_cut` and provide a deliberate new opening frame instead of pretending it is physical continuity.
-
-## Review and repair
-
-Use `references/h3-retake-protocol.md` to issue exactly one verdict: `KEEP`, `POST-FIX`, `REROLL`, or `REWRITE`.
-
-For `REROLL`, preserve accepted assets and change one primary variable only. For `REWRITE`, rebuild the shot contract before changing prompt prose. Record what changed and why.
-
-## Quality gate
-
-Before delivery, verify:
-
-- all eight director steps are present and in order; the director contract passes `validate_director_contract.py`;
-- the dramatic turn is visible, not merely described;
-- camera movement has a narrative cause and a readable endpoint;
-- body weight, support, contact, transformation, and object motion follow a clear chain;
-- spatial axis, screen direction, vertical orientation, and environment identity remain stable;
-- lighting comes from believable sources and remains continuous across cuts;
-- one subject owns the focused action while others use restrained micro-motion;
-- dialogue fits the available time and the mouth is visible when lip sync is requested;
-- references do not conflict or leak unrelated wardrobe, faces, architecture, pose, or framing;
-- the ending creates a usable state or hook for the next module;
-- the accepted take has a saved real end frame, and that exact frame is assigned to the next module's `Picture 1` / `ref_image_0`;
-- the final 0.3–0.5 seconds are stable enough to extract a useful handoff frame;
-- the model-facing prompt contains no internal episode/module IDs, local paths, acceptance or missing-file status, or execution-gating prose;
-- the task prefix and `<Picture N>`/`<Video N>`/`<Audio N>` labels match the references actually connected in ComfyUI;
-- the final prompt passes `validate_h3_prompt.py`.
+本 Skill 负责规划、编译、校验和审查。调用付费视频 API、批量生成、重试和发布仍需当前任务的明确授权。
