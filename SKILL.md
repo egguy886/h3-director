@@ -1,6 +1,7 @@
 ---
 name: h3-drama-director
 description: 把单集或连续短剧剧本拆成可配置的 H3 视频片段，锁定剧情节拍与逐字对白，完成导演调度、官方 H3 提示词编译、真实尾帧串行接力和成片验收。适用于剧本转整集 H3 生产包；不用于普通单镜头润色或未经授权直接调用视频生成 API。
+compatibility: "适用于读取通用 SKILL.md 的 Agent Skills 宿主；内置校验与 handoff 脚本需要 Node.js 18+，视频生成 API 不包含在本 Skill 内。"
 ---
 
 # H3 短剧总导演

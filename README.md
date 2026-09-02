@@ -55,6 +55,19 @@ git clone https://github.com/egguy886/h3-drama-director.git "$env:USERPROFILE\.c
 Use $h3-drama-director to turn this episode script into a validated H3 production package.
 ```
 
+## 多平台适配
+
+本 Skill 采用通用 Agent Skills 目录结构：`SKILL.md` 加上 `references/` 和 `scripts/`。因此规则、参考文档和 H3 提示词编译逻辑可以迁移到 Codex、Claude.ai、Claude Code、Claude API 以及 Google Antigravity。平台差异主要在安装入口和本地脚本执行环境。
+
+- **Codex**：将整个仓库目录放入 Codex Skills 目录；`agents/openai.yaml` 提供 Codex 的界面显示元数据。
+- **Claude.ai**：将 `SKILL.md`、`references/`、`scripts/` 打包上传到 Settings → Capabilities → Skills；仓库级 `README.md` 不必放进 Skill 包。
+- **Claude Code / Claude API**：通过对应的 Skills 目录或 API/Agent SDK 的 Skill 管理入口导入同一份 Skill。API 方式是否能执行本地脚本，取决于宿主是否提供相应的代码执行能力。
+- **Antigravity**：项目级放入 `.agents/skills/h3-drama-director/`，全局放入 `~/.gemini/config/skills/h3-drama-director/`；SDK 可通过 `skills_paths` 指向该目录。
+
+跨平台边界：`SKILL.md`、参考文档和提示词规则是可移植的；内置校验与 handoff 脚本需要 Node.js 18+；`agents/openai.yaml` 是 Codex 界面元数据，其他平台可忽略；本 Skill 不内置视频生成 API。
+
+规范参考：[Anthropic Agent Skills 指南](https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf) · [Google Antigravity Skills 文档](https://antigravity.google/docs/skills)
+
 
 ## 本地校验
 
